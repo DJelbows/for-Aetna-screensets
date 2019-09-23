@@ -1,10 +1,11 @@
 html {
     font-size: 62.5%;
+    margin-top: 2rem;
 }
 
 body{
     background: $off-white;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Open Sans', sans-serif, Helvetica, Arial;
     font-size: $m-size;
 }
 
@@ -14,4 +15,16 @@ button {
 
 button:disabled {
     cursor: default;
+}
+
+h1 {
+  margin-left: 2.8rem;
+  font-weight: 100;
+  font-size: $xl-size
+}
+
+h2 {
+  margin-left: 2.0rem;
+  font-weight: 100;
+  font-size: $l-size
 }

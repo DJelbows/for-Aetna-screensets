@@ -1,7 +1,21 @@
-.navigation{
+.navigation {
     margin: $m-size;
     border: 1px solid $light-gray;
-    border-radius: $xs-size; 
+    border-radius: $xs-size;
     background: $white;
-    
+    min-height: 320px;
+
+    .link {
+      padding: 25px;
+      min-width: 300px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .activeLink {
+      @extend .link;
+      border-left: 4px solid $purple;
+      color: $purple;
+    }
 }

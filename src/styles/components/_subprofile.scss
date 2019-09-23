@@ -1,6 +1,14 @@
 .subprofile{
     margin: $m-size;
     border: 1px solid $light-gray;
-    border-radius: $xs-size; 
+    border-radius: $xs-size;
     background: $white;
+    min-width: 750px;
+    min-height: 130px;
+    text-align: left;
+}
+
+.subprofileNext {
+  @extend .subprofile;
+  margin-top: 1rem;
 }
