@@ -4,12 +4,13 @@ import constants from '../utils/constants'
 
 export default class Paperless extends React.Component {
     componentDidMount() {
-      gigyaHelper.showScreens(
-        constants.screensSets.profile.id,
-        [
-          { screen: constants.screensSets.profile.screens.paperless.id, container: 'paperless'}
-        ]
-      )
+        gigyaHelper.showScreens([
+            {
+                screenSet: constants.screensSets.profile.id,
+                startScreen: constants.screensSets.profile.screens.paperless.id,
+                containerID: 'paperless'
+            }
+        ])
     }
     render() {
         return (

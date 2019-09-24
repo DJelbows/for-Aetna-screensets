@@ -5,6 +5,12 @@ const constants = {
     communications: {id: 'communications', label: 'Communications'}
   },
   screensSets: {
+    loginReg: {
+      id: 'Default-RegistrationLogin',
+      screens: {
+        login: {id: 'gigya-login-screen'}
+      }
+    },
     profile: {
       id: 'Default-ProfileUpdate',
       screens: {
@@ -12,6 +18,8 @@ const constants = {
         editEmail: {id: 'personalinfoemail'},
         viewPhone: {id: 'personalinfophoneview'},
         editPhone: {id: 'personalinfophone'},
+        viewSecondaryPhone: {id: 'personalinfophonesecondview'},
+        editSecondaryPhone: {id: 'personalinfophonesecond'},
         paperless: {id: 'paperless'},
         communications: {id: 'communication'}
       }

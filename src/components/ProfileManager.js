@@ -8,11 +8,6 @@ import Communications from './Communications'
 import profileManagerLogic from '../logic/profileManagerLogic'
 
 @connect({
-  actions: [
-    profileManagerLogic, [
-      'setActiveTab'
-    ]
-  ],
   values: [
     profileManagerLogic, [
       'activeTab',

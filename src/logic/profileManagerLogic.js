@@ -5,7 +5,8 @@ import constants from '../utils/constants'
 export default kea({
   actions: () => ({
     // toggleReportDrawer: () => ({}),
-    setActiveTab: (tab) => ({ tab })
+    setActiveTab: (tab) => ({ tab }),
+    setUser: (user) => ({ user })
   }),
 
   reducers: ({ actions }) => ({
@@ -14,6 +15,9 @@ export default kea({
     // }],
     activeTab: [constants.tabs.personalInfo.id, PropTypes.string, {
       [actions.setActiveTab]: (_, payload) => payload.tab
+    }],
+    currentUser: [null, PropTypes.object, {
+      [actions.setUser]: (_, payload) => payload.user
     }]
   })
 })

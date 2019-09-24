@@ -4,12 +4,13 @@ import constants from '../utils/constants'
 
 export default class Communications extends React.Component {
     componentDidMount() {
-      gigyaHelper.showScreens(
-        constants.screensSets.profile.id,
-        [
-          { screen: constants.screensSets.profile.screens.communications.id, container: 'communication'}
-        ]
-      )
+        gigyaHelper.showScreens([
+            {
+                screenSet: constants.screensSets.profile.id,
+                startScreen: constants.screensSets.profile.screens.communications.id,
+                containerID: 'communication'
+            }
+        ])
     }
     render() {
         return (
