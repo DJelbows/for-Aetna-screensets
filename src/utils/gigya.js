@@ -138,8 +138,47 @@ const gigyaHelper = {
     },
     //check if email address exists on paperless and communications page
     checkEmailData(event) {
+        console.log(event)
         let noEmail = document.getElementsByClassName('aetna-no-email')[2]
+        let changeEmail = document.getElementsByClassName('aetna-change-email-text')[2]
         noEmail.style.display = !event.profile.email ? 'block' : 'none'
+        changeEmail.style.display = !event.profile.email ? 'none' : 'block'
+    },
+    //styling and adding behavior to paperless button
+    checkPaperlessButton(event) {
+        let paperlessButton = Array.from(document.getElementsByClassName('aetna-secondary-button')).filter(pb => pb.textContent == "Go Paperless for All")
+        if (!event.profile.email) {
+            paperlessButton[0].classList.add('aetna-secondary-button-disabled')
+        } else {
+            paperlessButton[0].classList.remove('aetna-secondary-button-disabled')
+            paperlessButton[0].onclick = () => {
+                let checkboxes = Array.from(document.getElementById('paperless').getElementsByTagName('input'))
+                checkboxes.forEach((c) => {
+                    if (c.type =='checkbox') {
+                        console.log(c)
+                        c.checked = true
+                    }
+                })
+                gigya.accounts.setAccountInfo({
+                    preferences: {
+                        other_paperlessExplanation : {
+                            isConsentGranted: true
+                        }
+                    },
+                    preferences: {
+                        other_paperlessTaxDocs : {
+                            isConsentGranted: true
+                        }
+                    },
+                    preferences: {
+                        other_paperlessOtherDocs : {
+                            isConsentGranted: true
+                        }
+                    }
+                })
+                
+            }
+        } 
     },
     //Disabling/enabling second phone button after checking for primary phone
     addSecondaryPhoneHandler(event) {

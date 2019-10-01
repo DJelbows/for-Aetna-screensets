@@ -23,8 +23,12 @@ export default class Paperless extends React.Component {
                 containerID: 'paperless',
                 onAfterScreenLoad: e => {
                     gigyaHelper.checkEmailData(e)
-                    let addEmailLink = document.getElementsByClassName('aetna-email-link')[2]
-                    addEmailLink.onclick = () => setActiveTab(constants.tabs.personalInfo.id)
+                    gigyaHelper.checkPaperlessButton(e)
+                    console.log(document.getElementsByClassName('aetna-email-link'))
+                    let editEmailLinks = Array.from(document.getElementsByClassName('aetna-email-link')).filter(l => l.textContent !== "")
+                    editEmailLinks.forEach((el) => {
+                        el.addEventListener('click', () => setActiveTab(constants.tabs.personalInfo.id))
+                    })
                 }
             }
         ])

@@ -22,8 +22,10 @@ export default class Communications extends React.Component {
                 containerID: 'communication',
                 onAfterScreenLoad: e => {
                     gigyaHelper.checkEmailData(e)
-                    let addEmailLink = document.getElementsByClassName('aetna-email-link')[2]
-                    addEmailLink.onclick = () => setActiveTab(constants.tabs.personalInfo.id)
+                    let editEmailLinks = Array.from(document.getElementsByClassName('aetna-email-link')).filter(l => l.textContent !== "")
+                    editEmailLinks.forEach((el) => {
+                        el.addEventListener('click', () => setActiveTab(constants.tabs.personalInfo.id))
+                    })
                 }
             }
         ])
