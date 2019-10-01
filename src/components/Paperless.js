@@ -8,7 +8,15 @@ export default class Paperless extends React.Component {
             {
                 screenSet: constants.screensSets.profile.id,
                 startScreen: constants.screensSets.profile.screens.paperless.id,
-                containerID: 'paperless'
+                containerID: 'paperless',
+                onAfterScreenLoad: e => {
+                    gigyaHelper.checkEmailData(e)
+                    let addEmailLink = document.getElementsByClassName('aetna-email-link')[2]
+                    console.log(addEmailLink)
+                    addEmailLink.onclick = () => {
+                        console.log('clicked')
+                    }
+                }
             }
         ])
     }

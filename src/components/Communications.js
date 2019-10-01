@@ -8,7 +8,10 @@ export default class Communications extends React.Component {
             {
                 screenSet: constants.screensSets.profile.id,
                 startScreen: constants.screensSets.profile.screens.communications.id,
-                containerID: 'communication'
+                containerID: 'communication',
+                onAfterScreenLoad: e => {
+                    gigyaHelper.checkEmailData(e)
+                }
             }
         ])
     }

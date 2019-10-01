@@ -100,6 +100,10 @@ const gigyaHelper = {
         if(!event.currentScreen===constants.screensSets.profile.screens.viewPhone.id
             || !event.currentScreen===constants.screensSets.profile.screens.viewSecondaryPhone.id) return
 
+            console.log(setUser)
+        
+        
+        
         // Show link only if phone is present
         const currentScreen = document.getElementById(event.currentScreen)
         const phone = gigyaHelper.findPhone(event, type)
@@ -113,18 +117,43 @@ const gigyaHelper = {
         bEdit.style.display = phone ? 'inline-block' : 'none'
         bDelete.style.display = phone ? 'inline-block' : 'none'
 
+        //Link is disabled if primary phone is not present
+        if (type == 'secondary') {
+            gigyaHelper.addSecondaryPhoneHandler(event)
+        }
+
+        //Set onclick function to delete phone number and move secondary to primary
         if(!phone) return
         bDelete.onclick = () => gigya.accounts.setAccountInfo({
             data: {
                 phones: event.data.phones.filter(p => p.type !== type)
             },
-            callback: () => {
+            callback: (response) => {
                 gigya.accounts.showScreenSet(phoneScreen)
                 gigyaHelper.refreshUser(setUser)
+                gigyaHelper.addSecondaryPhoneHandler(response)
+                
             }
         })
     },
+    //check if email address exists on paperless and communications page
+    checkEmailData(event) {
+        let noEmail = document.getElementsByClassName('aetna-no-email')[2]
+        noEmail.style.display = !event.profile.email ? 'block' : 'none'
 
+        /* let addEmailLink = document.getElementsByClassName('aetna-email-link')[2]
+        console.log(addEmailLink)
+        addEmailLink.onclick = () => {
+            console.log('clicked')
+        } */
+    },
+    //Disabling/enabling second phone button after checking for primary phone
+    addSecondaryPhoneHandler(event) {
+        const secondaryScreen = document.getElementById('personalinfophonesecondview')
+        let bAdd = secondaryScreen.getElementsByClassName('aetna-add-phone')[0]
+        const phonePrimary = gigyaHelper.findPhone(event, 'primary')
+        !phonePrimary ? bAdd.classList.add('aetna-primary-button-disabled') : bAdd.classList.remove('aetna-primary-button-disabled')
+    }
 }
 
 export default gigyaHelper

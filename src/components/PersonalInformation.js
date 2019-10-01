@@ -35,6 +35,9 @@ export default class PersonalInformation extends React.Component {
             },
             onFieldChanged: e => {
                 gigyaHelper.addFormatNumberHandler(e)
+            },
+            onAfterSubmit: e => {
+                gigyaHelper.addSecondaryPhoneHandler(e)
             }
         }
 
