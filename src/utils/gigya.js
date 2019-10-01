@@ -140,12 +140,6 @@ const gigyaHelper = {
     checkEmailData(event) {
         let noEmail = document.getElementsByClassName('aetna-no-email')[2]
         noEmail.style.display = !event.profile.email ? 'block' : 'none'
-
-        /* let addEmailLink = document.getElementsByClassName('aetna-email-link')[2]
-        console.log(addEmailLink)
-        addEmailLink.onclick = () => {
-            console.log('clicked')
-        } */
     },
     //Disabling/enabling second phone button after checking for primary phone
     addSecondaryPhoneHandler(event) {
