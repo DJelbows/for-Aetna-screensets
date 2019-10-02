@@ -155,7 +155,7 @@ const gigyaHelper = {
                 let checkboxes = Array.from(document.getElementById('paperless').getElementsByTagName('input'))
                 checkboxes.forEach((c) => {
                     if (c.type =='checkbox') {
-                        console.log(c)
+                        //console.log(c)
                         c.checked = true
                     }
                 })
