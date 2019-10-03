@@ -55,7 +55,24 @@ const gigyaHelper = {
         add.style.display = event.profile.email ? 'none' : 'inline-block'
         change.style.display = event.profile.email ? 'inline-block' : 'none'
     },
-
+    //add pop up screen for how we use your email
+    addHowWeUseEmailPopup: event => {
+        const currentScreen = document.getElementById(event.currentScreen)
+        Array.from(currentScreen.getElementsByClassName('aetna-useemail-link')).forEach(el => {
+            el.onclick = () => gigya.accounts.showScreenSet({
+                screenSet: constants.screensSets.profile.id,
+                startScreen: constants.screensSets.profile.screens.howWeUseEmail.id,
+                onAfterScreenLoad: e => {
+                    Array.from(document.getElementsByClassName('gigya-screen-dialog-top')).forEach((el => el.style.display = 'none'))
+                    document.getElementById(e.currentScreen).onclick = () => gigya.accounts.hideScreenSet({
+                        screenSet: e.currentScreen
+                    })
+                }
+            })
+        
+        })    
+            
+    },
     // Format phone number on change
     addFormatNumberHandler: event => {
         if(event.isValid && event.field == 'data.phones.number') {
@@ -99,8 +116,6 @@ const gigyaHelper = {
     addRemovePhoneLink: (event, phoneScreen, setUser, type) => {
         if(!event.currentScreen===constants.screensSets.profile.screens.viewPhone.id
             || !event.currentScreen===constants.screensSets.profile.screens.viewSecondaryPhone.id) return
-
-            console.log(setUser)
         
         
         
@@ -138,7 +153,6 @@ const gigyaHelper = {
     },
     //check if email address exists on paperless and communications page
     checkEmailData(event) {
-        console.log(event)
         let noEmail = document.getElementsByClassName('aetna-no-email')[2]
         let changeEmail = document.getElementsByClassName('aetna-change-email-text')[2]
         noEmail.style.display = !event.profile.email ? 'block' : 'none'

@@ -22,6 +22,7 @@ export default class PersonalInformation extends React.Component {
             onAfterScreenLoad: e => {
                 gigyaHelper.addRemoveEmailLink(e, emailScreen, setUser)
                 gigyaHelper.refreshAddChangeButton(e)
+                gigyaHelper.addHowWeUseEmailPopup(e)
             }
         }
 

@@ -21,7 +21,8 @@ const constants = {
         viewSecondaryPhone: {id: 'personalinfophonesecondview'},
         editSecondaryPhone: {id: 'personalinfophonesecond'},
         paperless: {id: 'paperless'},
-        communications: {id: 'communication'}
+        communications: {id: 'communication'},
+        howWeUseEmail: {id: 'howWeUseYourEmail'}
       }
     }
   }
