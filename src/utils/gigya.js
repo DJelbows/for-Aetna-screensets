@@ -78,9 +78,7 @@ const gigyaHelper = {
         if(event.isValid && event.field == 'data.phones.number') {
             var phoneNumber = event.value.replace(/[-/.)(]/g, '')
             phoneNumber = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
-            const currentScreen = document.getElementById(event.currentScreen)
-            console.log(currentScreen)
-            currentScreen.getElementsByName('data.phones.number')[0].value = phoneNumber
+            document.getElementById(event.screen).getElementsByClassName('aetna-phone-input')[0].value = phoneNumber
        }
     },
 
@@ -169,25 +167,7 @@ const gigyaHelper = {
                 let checkboxes = Array.from(document.getElementById('paperless').getElementsByTagName('input'))
                 checkboxes.forEach((c) => {
                     if (c.type =='checkbox') {
-                        //console.log(c)
                         c.checked = true
-                    }
-                })
-                gigya.accounts.setAccountInfo({
-                    preferences: {
-                        other_paperlessExplanation : {
-                            isConsentGranted: true
-                        }
-                    },
-                    preferences: {
-                        other_paperlessTaxDocs : {
-                            isConsentGranted: true
-                        }
-                    },
-                    preferences: {
-                        other_paperlessOtherDocs : {
-                            isConsentGranted: true
-                        }
                     }
                 })
                 
