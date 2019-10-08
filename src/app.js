@@ -15,9 +15,11 @@ resetContext({
   ]
 })
 
-ReactDOM.render(
-  <Provider store={getContext().store}>
-    <Home />
-  </Provider>,
-  document.getElementById('app')
-)
+window.onGigyaServiceReady = () => {
+    ReactDOM.render(
+        <Provider store={getContext().store}>
+          <Home />
+        </Provider>,
+        document.getElementById('app')
+      )
+}

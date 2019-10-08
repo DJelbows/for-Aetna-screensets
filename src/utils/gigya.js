@@ -4,8 +4,8 @@ const gigyaHelper = {
     // Ensure app state is refreshed with user information
     listenForGigyaUser: setUser => {
         gigya.accounts.addEventHandlers({
-            onLogin: e => setUser(e.profile),
-            onLogout: () => setUser(null)
+            onLogin: e =>  window.location = 'index.html',
+            onLogout: () => window.location = 'login.html'
         })
         gigyaHelper.refreshUser(setUser)
     },
@@ -13,7 +13,7 @@ const gigyaHelper = {
     // Retrieve user info from CDC and pass to app (refresh state)
     refreshUser: setUser => {
         gigya.accounts.getAccountInfo({
-            callback: e => e.errorCode===0 ? setUser(e.profile) : null
+            callback: e => {setUser(e.errorCode===0 ? e.profile : null)}
         })
     },
 
@@ -69,9 +69,9 @@ const gigyaHelper = {
                     })
                 }
             })
-        
-        })    
-            
+
+        })
+
     },
     // Format phone number on change
     addFormatNumberHandler: event => {
@@ -114,9 +114,9 @@ const gigyaHelper = {
     addRemovePhoneLink: (event, phoneScreen, setUser, type) => {
         if(!event.currentScreen===constants.screensSets.profile.screens.viewPhone.id
             || !event.currentScreen===constants.screensSets.profile.screens.viewSecondaryPhone.id) return
-        
-        
-        
+
+
+
         // Show link only if phone is present
         const currentScreen = document.getElementById(event.currentScreen)
         const phone = gigyaHelper.findPhone(event, type)
@@ -145,7 +145,6 @@ const gigyaHelper = {
                 gigya.accounts.showScreenSet(phoneScreen)
                 gigyaHelper.refreshUser(setUser)
                 gigyaHelper.addSecondaryPhoneHandler(response)
-                
             }
         })
     },
@@ -170,9 +169,9 @@ const gigyaHelper = {
                         c.checked = true
                     }
                 })
-                
+
             }
-        } 
+        }
     },
     //Disabling/enabling second phone button after checking for primary phone
     addSecondaryPhoneHandler(event) {

@@ -12,3 +12,21 @@
   @extend .subprofile;
   margin-top: 1rem;
 }
+
+// .loginContainer {
+//     display: flex;
+//     flex-direction: row;
+//     justify-content: flex-start;
+//     align-items: flex-start;
+//     margin-left: 1rem;
+//     max-width: 100rem;
+
+//     #login {
+//         @extend .subprofile;
+//         margin: 0 auto;
+
+//         #gigya-login-screen {
+//             margin: 0 auto;
+//         }
+//     }
+// }

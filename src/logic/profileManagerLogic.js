@@ -16,7 +16,7 @@ export default kea({
     activeTab: [constants.tabs.personalInfo.id, PropTypes.string, {
       [actions.setActiveTab]: (_, payload) => payload.tab
     }],
-    currentUser: [null, PropTypes.object, {
+    currentUser: [{loading:true}, PropTypes.object, {
       [actions.setUser]: (_, payload) => payload.user
     }]
   })

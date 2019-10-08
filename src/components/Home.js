@@ -24,6 +24,7 @@ export default class Home extends React.Component {
     }
     render () {
         const { currentUser } = this.props
-        return currentUser ? <ProfileManager/> : <Login />
+        if(currentUser && currentUser.loading) return null
+        return currentUser ? <ProfileManager /> : <Login />
     }
 }
