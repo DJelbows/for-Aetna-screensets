@@ -64,8 +64,12 @@ const gigyaHelper = {
                 startScreen: constants.screensSets.profile.screens.howWeUseEmail.id,
                 onAfterScreenLoad: e => {
                     Array.from(document.getElementsByClassName('gigya-screen-dialog-top')).forEach((el => el.style.display = 'none'))
-                    document.getElementById(e.currentScreen).onclick = () => gigya.accounts.hideScreenSet({
-                        screenSet: e.currentScreen
+                    Array.from(document.getElementsByClassName('aetna-howweuse-close')).forEach(el => {
+                        el.onclick = () => {
+                            gigya.accounts.hideScreenSet({
+                                screenSet: e.currentScreen
+                            })
+                        }
                     })
                 }
             })
