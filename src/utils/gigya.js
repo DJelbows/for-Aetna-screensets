@@ -111,11 +111,9 @@ const gigyaHelper = {
     },
 
     // Remove phone from account
-    addRemovePhoneLink: (event, phoneScreen, setUser, type) => {
+    addRemovePhoneLink: (event, phoneScreen, setUser, type, secondaryScreen) => {
         if(!event.currentScreen===constants.screensSets.profile.screens.viewPhone.id
             || !event.currentScreen===constants.screensSets.profile.screens.viewSecondaryPhone.id) return
-
-
 
         // Show link only if phone is present
         const currentScreen = document.getElementById(event.currentScreen)
@@ -137,16 +135,36 @@ const gigyaHelper = {
 
         //Set onclick function to delete phone number and move secondary to primary
         if(!phone) return
-        bDelete.onclick = () => gigya.accounts.setAccountInfo({
-            data: {
-                phones: event.data.phones.filter(p => p.type !== type)
-            },
-            callback: (response) => {
-                gigya.accounts.showScreenSet(phoneScreen)
-                gigyaHelper.refreshUser(setUser)
-                gigyaHelper.addSecondaryPhoneHandler(response)
-            }
-        })
+        bDelete.onclick = () => {
+            gigya.accounts.getAccountInfo({include:'data,preferences', callback: user => {
+                const newPhones = user.data.phones.filter(p => p.type !== type)
+
+                // check if secondary phone must be moved to primary
+                let consent = {}
+                if(newPhones.length && newPhones[0].type == 'secondary') {
+                    newPhones[0].type = 'primary'
+                    consent = {
+                        preferences: {
+                            other_receiveText: {isConsentGranted: user.preferences.other_receiveTextSecondary.isConsentGranted},
+                            other_receiveTextSecondary: {isConsentGranted: false}
+                        }
+                    }
+                }
+
+                gigya.accounts.setAccountInfo({
+                    data: {
+                        phones: newPhones
+                    },
+                    ...consent,
+                    callback: (response) => {
+                        gigya.accounts.showScreenSet(phoneScreen)
+                        gigyaHelper.refreshUser(setUser)
+                        gigyaHelper.addSecondaryPhoneHandler(response)
+                        if (type == 'primary') gigyaHelper.showScreens([secondaryScreen])
+                    }
+                })
+            }})
+        }
     },
     //check if email address exists on paperless and communications page
     checkEmailData(event) {

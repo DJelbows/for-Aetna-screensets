@@ -26,22 +26,6 @@ export default class PersonalInformation extends React.Component {
             }
         }
 
-        const phoneScreen = {
-            screenSet: constants.screensSets.profile.id,
-            startScreen: constants.screensSets.profile.screens.viewPhone.id,
-            containerID: 'personalinfophone',
-            onAfterScreenLoad: e => {
-                gigyaHelper.loadPhoneData(e, 'primary')
-                gigyaHelper.addRemovePhoneLink(e, phoneScreen, setUser, 'primary')
-            },
-            onFieldChanged: e => {
-                gigyaHelper.addFormatNumberHandler(e)
-            },
-            onAfterSubmit: e => {
-                gigyaHelper.addSecondaryPhoneHandler(e)
-            }
-        }
-
         const secondaryPhoneScreen = {
             screenSet: constants.screensSets.profile.id,
             startScreen: constants.screensSets.profile.screens.viewSecondaryPhone.id,
@@ -55,6 +39,22 @@ export default class PersonalInformation extends React.Component {
             }
         }
 
+        const phoneScreen = {
+            screenSet: constants.screensSets.profile.id,
+            startScreen: constants.screensSets.profile.screens.viewPhone.id,
+            containerID: 'personalinfophone',
+            onAfterScreenLoad: e => {
+                gigyaHelper.loadPhoneData(e, 'primary')
+                gigyaHelper.addRemovePhoneLink(e, phoneScreen, setUser, 'primary', secondaryPhoneScreen)
+            },
+            onFieldChanged: e => {
+                gigyaHelper.addFormatNumberHandler(e)
+            },
+            onAfterSubmit: e => {
+                gigyaHelper.addSecondaryPhoneHandler(e)
+            }
+        }
+
         gigyaHelper.showScreens([emailScreen, phoneScreen, secondaryPhoneScreen])
     }
     render() {
@@ -63,8 +63,8 @@ export default class PersonalInformation extends React.Component {
                 <h2>Personal Information</h2>
                 <div id='personalinfoemail' className='subprofile' />
                 <div className='subprofileNext'>
-                    <div id='personalinfophone' />
-                    <div id='personalinfophonesecondary' />
+                    <div id='personalinfophone' className='phoneContainer' />
+                    <div id='personalinfophonesecondary' className='phoneContainer' />
                 </div>
               </div>
             )
