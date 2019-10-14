@@ -22,7 +22,9 @@ const constants = {
         editSecondaryPhone: {id: 'personalinfophonesecond'},
         paperless: {id: 'paperless'},
         communications: {id: 'communication'},
-        howWeUseEmail: {id: 'howWeUseYourEmail'}
+        howWeUseEmail: {id: 'howWeUseYourEmail'},
+        deleteEmail: {id: 'deleteEmail'},
+        deletePhone: {id: 'deletePhone'}
       }
     }
   }

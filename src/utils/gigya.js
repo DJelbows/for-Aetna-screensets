@@ -28,17 +28,19 @@ const gigyaHelper = {
         let item =document.getElementsByClassName('aetna-remove-email')[1]
         if(event.profile.email) {
             item.style.display = 'inline-block'
-            item.onclick = () => gigya.accounts.setAccountInfo({
-                profile: { email: null },
-                callback: () => {
-                    gigya.accounts.switchScreen({
-                        screenSet: emailScreen.screenSet,
-                        screen: emailScreen.startScreen,
-                        containerID: emailScreen.containerID
-                    })
-                    gigyaHelper.refreshUser(setUser)
-                }
-            })
+            item.onclick = () => {
+                gigyaHelper.confirmDeleteEmailPopup(() => gigya.accounts.setAccountInfo({
+                    profile: { email: null },
+                    callback: () => {
+                        gigya.accounts.switchScreen({
+                            screenSet: emailScreen.screenSet,
+                            screen: emailScreen.startScreen,
+                            containerID: emailScreen.containerID
+                        })
+                        gigyaHelper.refreshUser(setUser)
+                    }
+                }))
+            }
         } else {
             item.style.display = 'none'
         }
@@ -63,8 +65,9 @@ const gigyaHelper = {
                 screenSet: constants.screensSets.profile.id,
                 startScreen: constants.screensSets.profile.screens.howWeUseEmail.id,
                 onAfterScreenLoad: e => {
+                    document.activeElement.blur()
                     Array.from(document.getElementsByClassName('gigya-screen-dialog-top')).forEach((el => el.style.display = 'none'))
-                    Array.from(document.getElementsByClassName('aetna-howweuse-close')).forEach(el => {
+                    Array.from(document.getElementsByClassName('aetna-popup-close')).forEach(el => {
                         el.onclick = () => {
                             gigya.accounts.hideScreenSet({
                                 screenSet: e.currentScreen
@@ -113,7 +116,60 @@ const gigyaHelper = {
                 `${phone.countryCode} ${phone.number} ${phone.extension ? `x${phone.extension}` : ''}`
         }
     },
-
+    //add pop up confirmation screen for delete phone
+    confirmDeletePhonePopup: (handler, type, number, phones) => {
+        gigya.accounts.showScreenSet({
+            screenSet: constants.screensSets.profile.id,
+            startScreen: constants.screensSets.profile.screens.deletePhone.id,
+            onAfterScreenLoad: e => {
+                document.activeElement.blur()
+                Array.from(document.getElementsByClassName('aetna-move-secondary-label')).forEach((el =>
+                    el.style.display = (phones.length > 1 && type=='primary') ? 'inline-block' : 'none'))
+                Array.from(document.getElementsByClassName('gigya-screen-dialog-top')).forEach((el => el.style.display = 'none'))
+                Array.from(document.getElementsByClassName('aetna-close-handler')).forEach(el => {
+                    el.onclick = () => {
+                        gigya.accounts.hideScreenSet({
+                            screenSet: e.currentScreen
+                        })
+                    }
+                })
+                Array.from(document.getElementsByClassName('aetna-delete-phone-button')).forEach(el => el.onclick = () => {
+                    handler()
+                    gigya.accounts.hideScreenSet({
+                        screenSet: e.currentScreen
+                    })
+                })
+                Array.from(document.getElementsByClassName('aetna-screen-header')).forEach((el =>
+                    el.innerText = el.innerText.replace('{type}', type) ))
+                Array.from(document.getElementsByClassName('aetna-phone-confirmation')).forEach((el =>
+                    el.innerText = el.innerText.replace('{number}', number) ))
+            }
+        })
+    },
+    //add pop up confirmation screen for delete email
+    confirmDeleteEmailPopup: handler => {
+        gigya.accounts.showScreenSet({
+            screenSet: constants.screensSets.profile.id,
+            startScreen: constants.screensSets.profile.screens.deleteEmail.id,
+            onAfterScreenLoad: e => {
+                document.activeElement.blur()
+                Array.from(document.getElementsByClassName('gigya-screen-dialog-top')).forEach((el => el.style.display = 'none'))
+                Array.from(document.getElementsByClassName('aetna-close-handler')).forEach(el => {
+                    el.onclick = () => {
+                        gigya.accounts.hideScreenSet({
+                            screenSet: e.currentScreen
+                        })
+                    }
+                })
+                Array.from(document.getElementsByClassName('aetna-delete-email-button')).forEach(el => el.onclick = () => {
+                    handler()
+                    gigya.accounts.hideScreenSet({
+                        screenSet: e.currentScreen
+                    })
+                })
+            }
+        })
+    },
     // Remove phone from account
     addRemovePhoneLink: (event, phoneScreen, setUser, type, secondaryScreen) => {
         if(!event.currentScreen===constants.screensSets.profile.screens.viewPhone.id
@@ -140,34 +196,46 @@ const gigyaHelper = {
         //Set onclick function to delete phone number and move secondary to primary
         if(!phone) return
         bDelete.onclick = () => {
-            gigya.accounts.getAccountInfo({include:'data,preferences', callback: user => {
-                const newPhones = user.data.phones.filter(p => p.type !== type)
+            // refresh phones data before performing confirmation
+            gigya.accounts.getAccountInfo({
+                include:'data,preferences',
+                callback: user => {
+                    // show confirmation popup
+                    gigyaHelper.confirmDeletePhonePopup(() => {
+                        // DELETION HANDLER
+                        const newPhones = user.data.phones.filter(p => p.type !== type)
+                        // remove consent for deleted phone
+                        let consent = { preferences: {}}
+                        if(type == 'primary')
+                            consent.preferences.other_receiveText = { isConsentGranted: false }
+                        else
+                            consent.preferences.other_receiveTextSecondary = { isConsentGranted: false }
 
-                // check if secondary phone must be moved to primary
-                let consent = {}
-                if(newPhones.length && newPhones[0].type == 'secondary') {
-                    newPhones[0].type = 'primary'
-                    consent = {
-                        preferences: {
-                            other_receiveText: {isConsentGranted: user.preferences.other_receiveTextSecondary.isConsentGranted},
-                            other_receiveTextSecondary: {isConsentGranted: false}
+                        // check if secondary phone must be moved to primary
+                        if(newPhones.length && newPhones[0].type == 'secondary') {
+                            newPhones[0].type = 'primary'
+                            consent.preferences.other_receiveText = {
+                                isConsentGranted: user.preferences.other_receiveTextSecondary.isConsentGranted
+                            }
+                            consent.preferences.other_receiveTextSecondary = { isConsentGranted: false }
                         }
-                    }
-                }
 
-                gigya.accounts.setAccountInfo({
-                    data: {
-                        phones: newPhones
-                    },
-                    ...consent,
-                    callback: (response) => {
-                        gigya.accounts.showScreenSet(phoneScreen)
-                        gigyaHelper.refreshUser(setUser)
-                        gigyaHelper.addSecondaryPhoneHandler(response)
-                        if (type == 'primary') gigyaHelper.showScreens([secondaryScreen])
-                    }
-                })
-            }})
+                        gigya.accounts.setAccountInfo({
+                            data: {
+                                phones: newPhones
+                            },
+                            ...consent,
+                            callback: (response) => {
+                                gigya.accounts.showScreenSet(phoneScreen)
+                                gigyaHelper.refreshUser(setUser)
+                                gigyaHelper.addSecondaryPhoneHandler(response)
+                                if (type == 'primary') gigyaHelper.showScreens([secondaryScreen])
+                            }
+                        })
+
+                    }, type, currentScreen.getElementsByClassName('aetna-phone-number-label')[0].innerText, user.data.phones
+                )}
+            })
         }
     },
     //check if email address exists on paperless and communications page
@@ -198,6 +266,7 @@ const gigyaHelper = {
     //Disabling/enabling second phone button after checking for primary phone
     addSecondaryPhoneHandler(event) {
         const secondaryScreen = document.getElementById('personalinfophonesecondview')
+        if(!secondaryScreen) return
         let bAdd = secondaryScreen.getElementsByClassName('aetna-add-phone')[0]
         const phonePrimary = gigyaHelper.findPhone(event, 'primary')
         !phonePrimary ? bAdd.classList.add('aetna-primary-button-disabled') : bAdd.classList.remove('aetna-primary-button-disabled')

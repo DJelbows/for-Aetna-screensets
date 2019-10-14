@@ -6,27 +6,21 @@
     min-width: 750px;
     min-height: 130px;
     text-align: left;
+
+    .gigya-screen.portrait {
+        padding-left: 40px;
+    }
 }
 
 .subprofileNext {
   @extend .subprofile;
   margin-top: 1rem;
+
+  #personalinfophonesecondary {
+    margin-top: -5rem;
+  }
+
+  .aetna-top-border {
+    width: 700px;
+  }
 }
-
-// .loginContainer {
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: flex-start;
-//     align-items: flex-start;
-//     margin-left: 1rem;
-//     max-width: 100rem;
-
-//     #login {
-//         @extend .subprofile;
-//         margin: 0 auto;
-
-//         #gigya-login-screen {
-//             margin: 0 auto;
-//         }
-//     }
-// }
