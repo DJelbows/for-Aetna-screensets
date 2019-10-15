@@ -82,10 +82,16 @@ const gigyaHelper = {
     },
     // Format phone number on change
     addFormatNumberHandler: event => {
+        console.log(event)
         if(event.isValid && event.field == 'data.phones.number') {
             var phoneNumber = event.value.replace(/[-/.)(]/g, '')
             phoneNumber = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
             document.getElementById(event.screen).getElementsByClassName('aetna-phone-input')[0].value = phoneNumber
+       } else if(event.isValid && event.field == 'data.phones.extension') {
+            console.log(document.getElementById(event.screen).getElementsByClassName('aetna-phone-checkbox'))
+            Array.from(document.getElementById(event.screen).getElementsByTagName('input')).forEach((el) => {
+                if (el.type == 'checkbox') event.value == "" ? el.disabled = false : el.disabled = true
+            })
        }
     },
 
@@ -173,7 +179,7 @@ const gigyaHelper = {
     // Remove phone from account
     addRemovePhoneLink: (event, phoneScreen, setUser, type, secondaryScreen) => {
         if(!event.currentScreen===constants.screensSets.profile.screens.viewPhone.id
-            || !event.currentScreen===constants.screensSets.profile.screens.viewSecondaryPhone.id) return
+            || !event.currentScreen===constants.screensSets.profile.screens.viewSecondaryPhone.id) {console.log('edit screen')}
 
         // Show link only if phone is present
         const currentScreen = document.getElementById(event.currentScreen)
