@@ -20,7 +20,18 @@
     margin-top: -5rem;
   }
 
-  .aetna-top-border {
+  /* .aetna-top-border {
     width: 700px;
+  } */
+}
+
+@media (max-width: $desktop-breakpoint) {
+  .subprofile {
+    width: 100%;
+    min-width:0px;
   }
+  .subProfileContainer {
+    width:100%;
+  }
+  
 }

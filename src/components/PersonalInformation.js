@@ -59,7 +59,7 @@ export default class PersonalInformation extends React.Component {
     }
     render() {
         return (
-              <div>
+              <div className='subProfileContainer'>
                 <h2>Personal Information</h2>
                 <div id='personalinfoemail' className='subprofile' />
                 <div className='subprofileNext'>
