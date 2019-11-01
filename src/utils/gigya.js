@@ -32,11 +32,20 @@ const gigyaHelper = {
 
         // Show link only if email present
         let item =document.getElementsByClassName('aetna-remove-email')[1]
-        if(event.profile.email) {
+        if(event.data.commPrefsConsents.preferredContacts.emails.address) {
             item.style.display = 'inline-block'
             item.onclick = () => {
                 gigyaHelper.confirmDeleteEmailPopup(() => gigya.accounts.setAccountInfo({
-                    profile: { email: null },
+                    data: {
+                        commPrefsConsents: {
+                            preferredContacts: {
+                                emails: {
+                                    address: null
+                                }
+                            }
+                        }
+                    },
+                    
                     callback: () => {
                         gigya.accounts.switchScreen({
                             screenSet: emailScreen.screenSet,
@@ -60,8 +69,8 @@ const gigyaHelper = {
         let add=document.getElementsByClassName('aetna-add-email')[1]
         let change=document.getElementsByClassName('aetna-change-email')[1]
 
-        add.style.display = event.profile.email ? 'none' : 'inline-block'
-        change.style.display = event.profile.email ? 'inline-block' : 'none'
+        add.style.display = event.data.commPrefsConsents.preferredContacts.emails.address ? 'none' : 'inline-block'
+        change.style.display = event.data.commPrefsConsents.preferredContacts.emails.address ? 'inline-block' : 'none'
     },
     //add pop up screen for how we use your email
     addHowWeUseEmailPopup: event => {
@@ -88,8 +97,8 @@ const gigyaHelper = {
     },
     // Format phone number on change
     addFormatNumberHandler: event => {
-        //console.log(event)
-        if(event.isValid && event.field == 'data.phones.number') {
+        console.log(event)
+        if(event.isValid && event.field == 'data.commPrefsConsents.preferredContacts.phones.number') {
             var phoneNumber = event.value.replace(/[-/.)(]/g, '')
             phoneNumber = phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
             document.getElementById(event.screen).getElementsByClassName('aetna-phone-input')[0].value = phoneNumber
@@ -103,10 +112,11 @@ const gigyaHelper = {
 
     // Find a phone type in array
     findPhone: (event, type) => {
-        if(!event.data || !event.data.phones)
+        //console.log(event.data.commPrefsConsents.preferredContacts.phones)
+        if(!event.data || !event.data.commPrefsConsents.preferredContacts.phones)
             return null
 
-        return event.data.phones.find(o => o.type === type)
+        return event.data.commPrefsConsents.preferredContacts.phones.find(o => o.type === type)
     },
 
     // Load formatted phone information in view mode
@@ -115,17 +125,18 @@ const gigyaHelper = {
             || !event.currentScreen===constants.screensSets.profile.screens.viewSecondaryPhone.id) return
 
         const currentScreen = document.getElementById(event.currentScreen)
+        //console.log(gigyaHelper.findPhone(event, type))
         const phone = gigyaHelper.findPhone(event, type)
         Array.from(currentScreen.getElementsByClassName('aetna-primary-phone-labels')).forEach((el =>
             el.style.display = phone ? 'inline-block' : 'none'
         ))
 
         if(phone) {
-            currentScreen.getElementsByClassName('aetna-sms')[0].style.display = phone.textReceive ? 'inline-block' : 'none'
-            currentScreen.getElementsByClassName('aetna-no-sms')[0].style.display = phone.textReceive ? 'none' : 'inline-block'
-            currentScreen.getElementsByClassName('aetna-contact-time')[0].innerText = phone.contactTime
+            currentScreen.getElementsByClassName('aetna-sms')[0].style.display = phone.isTextCapable ? 'inline-block' : 'none'
+            currentScreen.getElementsByClassName('aetna-no-sms')[0].style.display = phone.isTextCapable ? 'none' : 'inline-block'
+            currentScreen.getElementsByClassName('aetna-contact-time')[0].innerText = phone.bestTimeToContact
             currentScreen.getElementsByClassName('aetna-phone-number-label')[0].innerText =
-                `${phone.countryCode} ${phone.number} ${phone.extension ? `x${phone.extension}` : ''}`
+                `+1 ${phone.number} ${phone.extension ? `x${phone.extension}` : ''}`
         }
     },
     //add pop up confirmation screen for delete phone
@@ -215,28 +226,52 @@ const gigyaHelper = {
                     // show confirmation popup
                     gigyaHelper.confirmDeletePhonePopup(() => {
                         // DELETION HANDLER
-                        const newPhones = user.data.phones.filter(p => p.type !== type)
+                        const newPhones = user.data.commPrefsConsents.preferredContacts.phones.filter(p => p.type !== type)
                         // remove consent for deleted phone
-                        let consent = { preferences: {}}
+                        /*let consent = { preferences: {}}
                         if(type == 'primary')
                             consent.preferences.other_receiveText = { isConsentGranted: false }
                         else
-                            consent.preferences.other_receiveTextSecondary = { isConsentGranted: false }
+                            consent.preferences.other_receiveTextSecondary = { isConsentGranted: false }*/
+                        
+                        //temporary to eliminate contact consents
+                        if (newPhones.length == 0) {
+                            gigya.accounts.setAccountInfo({
+                                data: {
+                                    commPrefsConsents: {
+                                        communicationConsents : {
+                                            contactConsents : {
+                                                phoneContactConsents : []
+                                            }
+                                        } 
+                                    }
+                                        
+                                }
+                            })
+                        }
+
 
                         // check if secondary phone must be moved to primary
                         if(newPhones.length && newPhones[0].type == 'secondary') {
                             newPhones[0].type = 'primary'
-                            consent.preferences.other_receiveText = {
+                            /*consent.preferences.other_receiveText = {
                                 isConsentGranted: user.preferences.other_receiveTextSecondary.isConsentGranted
                             }
-                            consent.preferences.other_receiveTextSecondary = { isConsentGranted: false }
+                            consent.preferences.other_receiveTextSecondary = { isConsentGranted: false }*/
                         }
+                        
+                        
 
                         gigya.accounts.setAccountInfo({
                             data: {
-                                phones: newPhones
+                                commPrefsConsents: {
+                                    preferredContacts: {
+                                        phones: newPhones
+                                    }
+                                }
+                                    
                             },
-                            ...consent,
+                            //...consent,
                             callback: (response) => {
                                 gigya.accounts.showScreenSet(phoneScreen)
                                 gigyaHelper.refreshUser(setUser)
@@ -245,7 +280,7 @@ const gigyaHelper = {
                             }
                         })
 
-                    }, type, currentScreen.getElementsByClassName('aetna-phone-number-label')[0].innerText, user.data.phones
+                    }, type, currentScreen.getElementsByClassName('aetna-phone-number-label')[0].innerText, user.data.commPrefsConsents.preferredContacts.phones
                 )}
             })
         }
@@ -254,18 +289,24 @@ const gigyaHelper = {
     checkEmailData(event) {
         let noEmail = document.getElementsByClassName('aetna-no-email')[2]
         let changeEmail = document.getElementsByClassName('aetna-change-email-text')[2]
-        noEmail.style.display = !event.profile.email ? 'block' : 'none'
-        changeEmail.style.display = !event.profile.email ? 'none' : 'block'
+        noEmail.style.display = !event.data.commPrefsConsents.preferredContacts.emails.address ? 'block' : 'none'
+        changeEmail.style.display = !event.data.commPrefsConsents.preferredContacts.emails.address ? 'none' : 'block'
     },
     //styling and adding behavior to paperless button
     checkPaperlessButton(event) {
         let paperlessButton = Array.from(document.getElementsByClassName('aetna-secondary-button')).filter(pb => pb.textContent == "Go Paperless for All")
-        if (!event.profile.email) {
+        let checkboxes = Array.from(document.getElementById('paperless').getElementsByTagName('input'))
+        if (!event.data.commPrefsConsents.preferredContacts.emails.address) {
             paperlessButton[0].classList.add('aetna-secondary-button-disabled')
+            checkboxes.forEach((c) => {
+                if (c.type =='checkbox') {
+                    c.disabled = true
+                }
+            })
         } else {
             paperlessButton[0].classList.remove('aetna-secondary-button-disabled')
             paperlessButton[0].onclick = () => {
-                let checkboxes = Array.from(document.getElementById('paperless').getElementsByTagName('input'))
+                
                 checkboxes.forEach((c) => {
                     if (c.type =='checkbox') {
                         c.checked = true
